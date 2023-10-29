@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import openai
-from dotenv import load_dotenv
 import os
 
-# 載入環境變量
-load_dotenv(".env")
-openai.api_key = os.getenv("api_key")
+# 不再需要 dotenv
+# load_dotenv(".env")
+
+# 直接從 os 獲取環境變數
+openai.api_key = os.environ["api_key"]
 
 app = FastAPI()
 
