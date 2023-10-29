@@ -7,7 +7,7 @@ import os
 # load_dotenv(".env")
 
 # 直接從 os 獲取環境變數
-openai.api_key = os.environ.get["api_key"]
+openai.api_key = os.environ.get("api_key")
 
 app = FastAPI()
 
