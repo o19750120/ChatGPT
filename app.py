@@ -8,4 +8,4 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!', openai.api_key
+    return 'Hello, World!' + "api_key=" + openai.api_key
