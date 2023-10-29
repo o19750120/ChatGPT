@@ -3,11 +3,8 @@ from pydantic import BaseModel
 import openai
 import os
 
-# 不再需要 dotenv
-# load_dotenv(".env")
-
-# 直接從 os 獲取環境變數
-openai.api_key = os.environ.get('api_key')
+api_key = "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"
+openai.api_key = api_key
 
 app = FastAPI()
 
