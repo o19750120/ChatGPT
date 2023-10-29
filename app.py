@@ -1,18 +1,13 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import openai
 import os
+from flask import Flask, request, jsonify
+import openai
+import json
 
-api_key = os.environ.get("OPENAI_API_KEY")
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-openai.api_key = api_key
+app = Flask(__name__)
 
-app = FastAPI()
-
-class TextInput(BaseModel):
-    text: str
-
-def generate_summary(text: str) -> dict:
+def generate_summary(text):
     prompt = """
         根據以下描述的內容，擷取前五個字。
 
@@ -20,19 +15,22 @@ def generate_summary(text: str) -> dict:
     """.format(text=text)
 
     res = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=100
+        model = "text-davinci-003",
+        prompt = prompt,
+        max_tokens = 100
     )
 
     summary = res["choices"][0]["text"].strip()
 
     return {"summary": summary}
 
-@app.post("/generate-summary")
-def generate_summary_endpoint(item: TextInput):
-    summary = generate_summary(item.text)
-    return summary
 
-# 啟動指令如果你使用 uvicorn 來啟動 FastAPI
-# uvicorn filename:app --reload
+@app.route('/generate-summary', methods=['POST'])
+def generate_summary_endpoint():
+    data = request.get_json()
+    text = data["text"]
+    summary = generate_summary(text)
+    return jsonify(summary)
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)
