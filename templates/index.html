@@ -13,7 +13,6 @@
     <style>
         body {
             padding-top: 3%;
-            /* 降低上邊距 */
             font-size: 18px;
         }
 
@@ -42,29 +41,45 @@
 
         .btn-danger {
             width: 140px;
-            /* 加寬「關鍵字查詢」按鈕 */
         }
     </style>
+    <script>
+        function searchRecords() {
+            let keyword = document.querySelector('input[name="t1"]').value;
+            fetch('/search-results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ keyword: keyword }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.querySelector('tbody');
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        let tr = document.createElement('tr');
+                        row.forEach(cell => {
+                            let td = document.createElement('td');
+                            td.innerText = cell;
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    });
+                });
+        }
+    </script>
 </head>
 
 <body>
-
     <div class="container">
         <h2 class="text-center mb-4">查詢手術紀錄</h2>
         <div class="row justify-content-center">
-            <div class="col-md-11 col-lg-9"> <!-- 更大的col值以增加寬度 -->
-                <form method="post" action="/" class="mb-3 d-flex">
+            <div class="col-md-11 col-lg-9">
+                <div class="mb-3 d-flex">
                     <input type="text" class="form-control" name="t1" placeholder="輸入關鍵字" style="flex-grow: 2.5;">
-                    <button type="submit" class="btn btn-danger ms-3">關鍵字查詢</button>
-                </form>
-
-                <!-- 錯誤消息顯示 -->
-                {% if error_message %}
-                <div class="error mt-3">{{ error_message }}</div>
-                {% endif %}
-
-                <!-- 查詢結果顯示 -->
-                {% if results %}
+                    <button type="button" onclick="searchRecords()" class="btn btn-danger ms-3">關鍵字查詢</button>
+                </div>
                 <div class="mt-4">
                     <table>
                         <thead>
@@ -76,25 +91,11 @@
                                 <th>手術總結</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for result in results %}
-                            <tr>
-                                <td>{{ result[0] }}</td>
-                                <td>{{ result[1] }}</td>
-                                <td>{{ result[2] }}</td>
-                                <td>{{ result[3] }}</td>
-                                <td style="text-align:left;">{{ result[4] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
-                {% elif request.method == 'POST' %}
-                <p class="mt-3 text-center">沒有找到結果。</p>
-                {% endif %}
             </div>
         </div>
     </div>
-
 </body>
 </html>
