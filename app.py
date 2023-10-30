@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Setup OpenAI API
 config = dotenv_values(".env")
-openai.api_key = config["OPENAI_API_KEY"]
+openai.api_key = config["api_key"]
 
 # Setup database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://uquntbssh5qjxz3c:1sCSa0lO9EivSndeMEih@bipiwnp5zpch7rxjkw91-mysql.services.clever-cloud.com:3306/bipiwnp5zpch7rxjkw91'
