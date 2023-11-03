@@ -10,15 +10,51 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #005eb8;
+            /* 蓝色主题 */
+            --secondary-color: #4d9f0c;
+            /* 绿色辅助色 */
+        }
+
         body {
             padding-top: 3%;
             font-size: 18px;
+            font-family: 'Roboto', sans-serif;
+            background: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+        }
+
+        input[type="text"] {
+            border: 2px solid var(--primary-color);
+            border-radius: 0.25rem;
+            margin-right: 1rem;
+        }
+
+        .btn-danger {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 0.25rem;
+            /* 设定一个宽度以适应横向文本 */
+            width: 100px;
+            /* 或更根据实际需求调整 */
         }
 
         table {
-            border-collapse: collapse;
             width: 100%;
+            border-collapse: collapse;
         }
 
         table,
@@ -27,11 +63,24 @@
             border: 1px solid lightgray;
         }
 
-        th,
+        th {
+            background-color: var(--secondary-color);
+            color: black;
+            text-align: center;
+            vertical-align: middle;
+        }
+
         td {
             padding: 10px;
             text-align: center;
             vertical-align: middle;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: scroll;
+            }
         }
 
         .error {
@@ -39,13 +88,15 @@
             margin: 10px 0;
         }
 
-        .btn-danger {
-            width: 140px;
+        #loading {
+            display: none;
+            text-align: center;
         }
     </style>
     <script>
         function searchRecords() {
             let keyword = document.querySelector('input[name="t1"]').value;
+            document.getElementById('loading').style.display = 'block';
             fetch('/search-results', {
                 method: 'POST',
                 headers: {
@@ -55,6 +106,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById('loading').style.display = 'none';
                     let tableBody = document.querySelector('tbody');
                     tableBody.innerHTML = '';
                     data.forEach(row => {
@@ -66,6 +118,10 @@
                         });
                         tableBody.appendChild(tr);
                     });
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    console.error('Error:', error);
                 });
         }
     </script>
@@ -73,16 +129,21 @@
 
 <body>
     <div class="container">
-        <h2 class="text-center mb-4">查詢手術紀錄</h2>
+        <h2 class="text-center mb-4">手術記錄查詢</h2>
         <div class="row justify-content-center">
             <div class="col-md-11 col-lg-9">
                 <div class="mb-3 d-flex">
-                    <input type="text" class="form-control" name="t1" placeholder="輸入關鍵字" style="flex-grow: 2.5;">
-                    <button type="button" onclick="searchRecords()" class="btn btn-danger ms-3">關鍵字查詢</button>
+                    <input type="text" class="form-control" name="t1" placeholder="輸入關鍵字" style="margin-right: 1rem;">
+                    <button type="button" onclick="searchRecords()" class="btn btn-danger">查詢</button>
                 </div>
-                <div class="mt-4">
-                    <table>
-                        <thead>
+                <div id="loading" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="table-responsive mt-4">
+                    <table class="table">
+                        <thead class="table-light">
                             <tr>
                                 <th>ID</th>
                                 <th>手術名稱</th>
@@ -91,9 +152,12 @@
                                 <th>手術總結</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <!-- 搜索結果將在此填充 -->
+                        </tbody>
                     </table>
                 </div>
+                <div class="error" id="error-message"></div>
             </div>
         </div>
     </div>
