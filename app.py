@@ -12,8 +12,10 @@ config = dotenv_values(".env")
 openai.api_key = config["api_key"]
 
 # Setup database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://uquntbssh5qjxz3c:1sCSa0lO9EivSndeMEih@bipiwnp5zpch7rxjkw91-mysql.services.clever-cloud.com:3306/bipiwnp5zpch7rxjkw91'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://uquntbssh5qjxz3c:1sCSa0lO9EivSndeMEih@bipiwnp5zpch7rxjkw91-mysql.services.clever-cloud.com:3306/bipiwnp5zpch7rxjkw91'
 db = SQLAlchemy(app)
+
 
 def generate_summary(text):
     prompt = """
@@ -22,14 +24,13 @@ def generate_summary(text):
         {text}
     """.format(text=text)
 
-    res = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=100
-    )
+    res = openai.Completion.create(model="text-davinci-003",
+                                   prompt=prompt,
+                                   max_tokens=100)
 
     summary = res["choices"][0]["text"].strip()
     return {"summary": summary}
+
 
 @app.route('/search-results', methods=['POST'])
 def search_results():
@@ -40,27 +41,38 @@ def search_results():
             WHERE surgery_name LIKE :keyword 
             OR patient_gender LIKE :keyword
             OR surgery_summary LIKE :keyword
-        """),
-        {"keyword": '%' + keyword + '%'}).fetchall()
+        """), {
+            "keyword": '%' + keyword + '%'
+        }).fetchall()
 
     processed_results = []
     for result in results:
-        summary = generate_summary(result[4])
-        processed_result = list(result)
-        processed_result[4] = summary['summary']
-        processed_results.append(processed_result)
+        # 假定 result 的結構如下：
+        # result[0]: ID, result[1]: 手術名稱, result[2]: 病人性別, result[3]: 病人年齡, result[4]: 手術總結
+        summary = generate_summary(result[4])  # 调用 OpenAI API 生成摘要
+        processed_results.append({
+            "id": result[0],
+            "surgery_name": result[1],
+            "patient_gender": result[2],
+            "patient_age": result[3],
+            "surgery_summary": summary['summary']  # 將生成的摘要添加到返回結果中
+        })
 
     return jsonify(processed_results)
+
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
+
 @app.route('/test-db', methods=['GET'])
 def test_db():
     try:
-        results = db.session.execute(text("SELECT * FROM surgeryrecords LIMIT 10")).fetchall()
+        results = db.session.execute(
+            text("SELECT * FROM surgeryrecords LIMIT 10")).fetchall()
         results_str = '<br>'.join(str(row) for row in results)
         return f"Database is working! Results: <br> {results_str}"
     except Exception as e:
         return f"Error occurred: {e}"
+
