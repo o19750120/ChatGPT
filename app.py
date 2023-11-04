@@ -58,6 +58,8 @@ def search_results():
             "surgery_summary": summary['summary']  # 將生成的摘要添加到返回結果中
         })
 
+    app.logger.debug(processed_results)
+
     return jsonify(processed_results)
 
 
@@ -75,4 +77,3 @@ def test_db():
         return f"Database is working! Results: <br> {results_str}"
     except Exception as e:
         return f"Error occurred: {e}"
-
