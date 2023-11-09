@@ -9,56 +9,68 @@ app = Flask(__name__)
 
 # Setup OpenAI API
 config = dotenv_values(".env")
-openai.api_key = config["api_key"]
+openai.api_key = config["OPENAI_API_KEY"]
 
 # Setup database
-app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://uquntbssh5qjxz3c:1sCSa0lO9EivSndeMEih@bipiwnp5zpch7rxjkw91-mysql.services.clever-cloud.com:3306/bipiwnp5zpch7rxjkw91'
+app.config['SQLALCHEMY_DATABASE_URI'] = config["DATABASE_URL"]
 db = SQLAlchemy(app)
 
 
-def generate_summary(text):
+def summarize_record(text):
     prompt = """
-        根據以下描述的內容，擷取前五個字。
+    以下是一筆手術紀錄，包括：
+    手術序號、病歷號、日期、術式名稱、手術發現、術中發現、手術細節、術後診斷
+    請針對這筆手術紀錄製作一個摘要。
 
         {text}
     """.format(text=text)
 
     res = openai.Completion.create(model="text-davinci-003",
                                    prompt=prompt,
-                                   max_tokens=100)
+                                   max_tokens=200)
 
     summary = res["choices"][0]["text"].strip()
     return {"summary": summary}
 
 
 @app.route('/search-results', methods=['POST'])
-def search_results():
-    keyword = request.json['keyword']
-    results = db.session.execute(
+def search_records():
+    # 從請求中提取關鍵字
+    data = request.get_json()
+    keyword = data['keyword']
+
+    records = db.session.execute(
         text("""
             SELECT * FROM surgeryrecords 
-            WHERE surgery_name LIKE :keyword 
-            OR patient_gender LIKE :keyword
-            OR surgery_summary LIKE :keyword
+            WHERE ODR_LOGN LIKE :keyword 
+            OR ODR_CHRT	LIKE :keyword
+            OR ODR_PRDG LIKE :keyword
+            OR ODR_FIND LIKE :keyword
+            OR ODR_OPF LIKE :keyword
+            OR ODR_OPP LIKE :keyword
+            OR ODR_PODG LIKE :keyword
         """), {
             "keyword": '%' + keyword + '%'
         }).fetchall()
 
+    # 對每一條記錄進行摘要
     processed_results = []
-    for result in results:
-        # 假定 result 的結構如下：
-        # result[0]: ID, result[1]: 手術名稱, result[2]: 病人性別, result[3]: 病人年齡, result[4]: 手術總結
-        summary = generate_summary(result[4])  # 调用 OpenAI API 生成摘要
+    for record in records:
+        # 摘要生成邏輯，這裡需要您自己實現一個函數
+        summary = summarize_record(record)  # 假設的函數，需要您自己實現
+
         processed_results.append({
-            "id": result[0],
-            "surgery_name": result[1],
-            "patient_gender": result[2],
-            "patient_age": result[3],
-            "surgery_summary": summary['summary']  # 將生成的摘要添加到返回結果中
+            "ODR_LOGN": record[0],
+            "ODR_CHRT": record[1],
+            "ODR_PRDG": record[2],
+            "ODR_FIND": record[3],
+            "ODR_OPF": record[4],
+            "ODR_OPP": record[5],
+            "ODR_PODG": record[6],
+            "summary": summary["summary"]  # 添加摘要
         })
 
-    app.logger.debug(processed_results)
+    app.logger.debug(summary)
 
     return jsonify(processed_results)
 
@@ -77,3 +89,7 @@ def test_db():
         return f"Database is working! Results: <br> {results_str}"
     except Exception as e:
         return f"Error occurred: {e}"
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
