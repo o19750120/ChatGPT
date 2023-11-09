@@ -1,18 +1,19 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import openai
-from dotenv import dotenv_values
 from sqlalchemy import text
+import os
+
+
 
 # Setup Flask app
 app = Flask(__name__)
 
 # Setup OpenAI API
-config = dotenv_values(".env")
-openai.api_key = config["OPENAI_API_KEY"]
+openai.api_key = os.environ.get('DATABASE_URL')
 
 # Setup database
-app.config['SQLALCHEMY_DATABASE_URI'] = config["DATABASE_URL"]
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OPENAI_API_KEY')
 db = SQLAlchemy(app)
 
 
