@@ -10,10 +10,10 @@ import os
 app = Flask(__name__)
 
 # Setup OpenAI API
-openai.api_key = os.environ.get('DATABASE_URL')
+openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 # Setup database
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OPENAI_API_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 
