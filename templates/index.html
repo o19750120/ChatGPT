@@ -10,7 +10,6 @@
             integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
             crossorigin="anonymous"
         />
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
             rel="stylesheet"
@@ -20,133 +19,100 @@
                 --primary-color: #005eb8;
                 --secondary-color: #4d9f0c;
             }
-
             body {
                 padding-top: 3%;
                 font-size: 18px;
                 font-family: "Roboto", sans-serif;
                 background: #f4f4f4;
             }
-
             .container {
                 background: white;
                 padding: 20px;
                 border-radius: 5px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                max-width: 85%; /* 或者您可以使用更大的百分比或像素值 */
+                margin: auto; /* 居中显示 */
             }
-
             h2 {
                 color: var(--primary-color);
             }
-
             input[type="text"] {
                 border: 2px solid var(--primary-color);
                 border-radius: 0.25rem;
                 margin-right: 1rem;
             }
-
+            .btn-primary,
             .btn-danger {
                 background-color: var(--primary-color);
                 border: none;
                 border-radius: 0.25rem;
-                width: 100px;
+                margin-right: 10px;
             }
-
             table {
                 width: 100%;
                 border-collapse: collapse;
             }
-
             table,
             th,
             td {
                 border: 1px solid lightgray;
             }
-
             th {
                 background-color: var(--secondary-color);
                 color: black;
                 text-align: center;
                 vertical-align: middle;
             }
-
             td {
                 padding: 10px;
                 text-align: center;
                 vertical-align: middle;
             }
-
             .error {
                 color: red;
                 margin: 10px 0;
             }
-
             #loading {
                 display: none;
                 text-align: center;
             }
-
-            .chart-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 400px;
-                /* Adjust height as needed */
-            }
-
-            .carousel {
-                position: relative;
-            }
-
-            .carousel-control-prev,
-            .carousel-control-next {
-                width: 3rem;
-                height: 3rem;
-                border-radius: 50%;
-                background-color: transparent;
-                border: none;
-                position: absolute;
+            /* Style the modal */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
                 top: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0, 0, 0); /* Fallback color */
+                background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+                padding-top: 60px; /* Location of the box */
             }
-
-            .carousel-control-prev {
-                left: calc(50% - 40rem);
+            /* Modal Content */
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 50%; /* Could be more or less, depending on screen size */
             }
-
-            .carousel-control-next {
-                left: calc(50% + 38rem);
-            }
-
-            .carousel-control-prev-icon,
-            .carousel-control-next-icon {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2rem;
-                /* 增加箭頭的字體大小 */
-                color: #343a40;
-                /* 深灰色箭頭 */
-                color: #343a40;
-                /* 深灰色箭頭 */
+            /* The Close Button */
+            .close {
+                color: #aaaaaa;
+                float: right;
+                font-size: 28px;
                 font-weight: bold;
-                /* 設置粗體 */
             }
-
-            .carousel-control-prev-icon:after {
-                content: "‹";
-            }
-
-            .carousel-control-next-icon:after {
-                content: "›";
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
             }
         </style>
     </head>
-
     <body>
         <div class="container">
             <h2 class="text-center mb-4">手術記錄查詢</h2>
@@ -172,61 +138,32 @@
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <div
-                        id="recordCarousel"
-                        class="carousel slide"
-                        data-bs-ride="carousel"
-                        data-bs-interval="false"
-                    >
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>手術名稱</th>
-                                                <th>病人性別</th>
-                                                <th>病人年齡</th>
-                                                <th>手術總結</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- 搜索結果將在此填充 -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="chart-container">
-                                    <canvas id="genderChart"></canvas>
-                                </div>
-                            </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>操作</th>
+                                    <th>ODR_LOGN</th>
+                                    <th>ODR_CHRT</th>
+                                    <th>ODR_PRDG</th>
+                                    <th>ODR_FIND</th>
+                                    <th>ODR_OPF</th>
+                                    <th>ODR_OPP</th>
+                                    <th>ODR_PODG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Search results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="summaryModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeSummary()"
+                                >&times;</span
+                            >
+                            <p id="summaryText">摘要內容</p>
                         </div>
-                        <button
-                            class="carousel-control-prev"
-                            type="button"
-                            data-bs-target="#recordCarousel"
-                            data-bs-slide="prev"
-                        >
-                            <span
-                                class="carousel-control-prev-icon"
-                                aria-hidden="true"
-                            ></span>
-                            <span class="visually-hidden">上一頁</span>
-                        </button>
-                        <button
-                            class="carousel-control-next"
-                            type="button"
-                            data-bs-target="#recordCarousel"
-                            data-bs-slide="next"
-                        >
-                            <span
-                                class="carousel-control-next-icon"
-                                aria-hidden="true"
-                            ></span>
-                            <span class="visually-hidden">下一頁</span>
-                        </button>
                     </div>
                     <div class="error" id="error-message"></div>
                 </div>
@@ -250,85 +187,47 @@
                     body: JSON.stringify({ keyword: keyword }),
                 })
                     .then((response) => response.json())
-                    .then((data) => {
+                    .then((records) => {
                         document.getElementById("loading").style.display =
                             "none";
                         let tableBody = document.querySelector("tbody");
-                        tableBody.innerHTML = "";
-                        data.forEach((record) => {
+                        tableBody.innerHTML = ""; // Clear existing table content
+                        records.forEach((record, index) => {
                             let tr = document.createElement("tr");
                             tr.innerHTML = `
-                        <td>${record.id}</td>
-                        <td>${record.surgery_name}</td>
-                        <td>${record.patient_gender}</td>
-                        <td>${record.patient_age}</td>
-                        <td>${record.surgery_summary}</td>
-                        `;
+            <td><button type="button" class="btn btn-primary" onclick="showSummary('${record.summary}')">顯示摘要</button></td>
+            <td>${record.ODR_LOGN}</td>
+            <td>${record.ODR_CHRT}</td>
+            <td>${record.ODR_PRDG}</td>
+            <td>${record.ODR_FIND}</td>
+            <td>${record.ODR_OPF}</td>
+            <td>${record.ODR_OPP}</td>
+            <td>${record.ODR_PODG}</td>
+        `;
                             tableBody.appendChild(tr);
                         });
-                        createGenderChart(data);
                     })
                     .catch((error) => {
                         document.getElementById("loading").style.display =
                             "none";
                         console.error("Error:", error);
+                        let errorMessage =
+                            document.getElementById("error-message");
+                        errorMessage.textContent =
+                            "無法載入數據，請檢查後端服務。"; // Display error message
                     });
             }
 
-            let genderChart;
+            function showSummary(summary) {
+                let summaryModal = document.getElementById("summaryModal");
+                let summaryText = document.getElementById("summaryText");
+                summaryText.textContent = summary; // Set the summary text
+                summaryModal.style.display = "block"; // Show the modal
+            }
 
-            function createGenderChart(data) {
-                if (genderChart) {
-                    genderChart.destroy();
-                }
-                const genderData = {
-                    male: data.filter(
-                        (record) => record.patient_gender === "男"
-                    ).length,
-                    female: data.filter(
-                        (record) => record.patient_gender === "女"
-                    ).length,
-                    other: data.filter(
-                        (record) =>
-                            record.patient_gender !== "男" &&
-                            record.patient_gender !== "女"
-                    ).length,
-                };
-
-                const ctx = document
-                    .getElementById("genderChart")
-                    .getContext("2d");
-                genderChart = new Chart(ctx, {
-                    type: "pie",
-                    data: {
-                        labels: ["男", "女", "其他"],
-                        datasets: [
-                            {
-                                label: "性別比例",
-                                data: [
-                                    genderData.male,
-                                    genderData.female,
-                                    genderData.other,
-                                ],
-                                backgroundColor: [
-                                    "rgba(54, 162, 235, 0.6)",
-                                    "rgba(255, 99, 132, 0.6)",
-                                    "rgba(255, 206, 86, 0.6)",
-                                ],
-                                borderColor: [
-                                    "rgba(54, 162, 235, 1)",
-                                    "rgba(255,99,132,1)",
-                                    "rgba(255, 206, 86, 1)",
-                                ],
-                                borderWidth: 1,
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                    },
-                });
+            function closeSummary() {
+                let summaryModal = document.getElementById("summaryModal");
+                summaryModal.style.display = "none"; // Hide the modal
             }
         </script>
     </body>
