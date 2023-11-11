@@ -50,6 +50,7 @@ def search_records():
             OR ODR_OPF LIKE :keyword
             OR ODR_OPP LIKE :keyword
             OR ODR_PODG LIKE :keyword
+            LIMIT 2
         """), {
             "keyword": '%' + keyword + '%'
         }).fetchall()
