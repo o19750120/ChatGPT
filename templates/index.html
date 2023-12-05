@@ -132,6 +132,13 @@
                         >
                             查詢
                         </button>
+                        <button
+                            type="button"
+                            onclick="searchRecords(true)"
+                            class="btn btn-primary"
+                        >
+                            ChatGPT
+                        </button>
                     </div>
                     <div id="loading" class="text-center">
                         <div class="spinner-border text-primary" role="status">
@@ -144,11 +151,7 @@
                                 <tr>
                                     <th>手術序號</th>
                                     <th>病歷號</th>
-                                    <th>術式名稱</th>
-                                    <th>術中發現</th>
                                     <th>手術細節</th>
-                                    <th>術後診斷</th>
-                                    <th>ChatGPT</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -175,35 +178,68 @@
             crossorigin="anonymous"
         ></script>
         <script>
-            function searchRecords() {
+            function searchRecords(fullDisplay = false) {
                 let keyword = document.querySelector('input[name="t1"]').value;
                 document.getElementById("loading").style.display = "block";
+
                 fetch("/search-results", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ keyword: keyword }),
+                    body: JSON.stringify({
+                        keyword: keyword,
+                        full_display: fullDisplay,
+                    }),
                 })
                     .then((response) => response.json())
                     .then((records) => {
                         document.getElementById("loading").style.display =
                             "none";
                         let tableBody = document.querySelector("tbody");
-                        tableBody.innerHTML = ""; // Clear existing table content
-                        records.forEach((record, index) => {
+                        let tableHead = document.querySelector("thead tr");
+
+                        // 清除現有的表格內容
+                        tableBody.innerHTML = "";
+
+                        // 如果 fullDisplay 為 true，則顯示額外的欄位標題
+                        if (fullDisplay) {
+                            // 添加額外欄位的標題到 <thead>
+                            tableHead.innerHTML = `
+                <th>手術序號</th>
+                <th>病歷號</th>
+                <th>手術細節</th>
+                <th>手術名稱與術後診斷</th>
+                <th>患者準備與手術場地準備</th>
+                <th>手術進入與操作</th>
+                <th>傷口處理與手術結尾</th>
+                <!-- 根據需求添加更多欄位 -->
+            `;
+                        } else {
+                            // 只顯示基本的欄位標題
+                            tableHead.innerHTML = `
+                <th>手術序號</th>
+                <th>病歷號</th>
+                <th>手術細節</th>
+            `;
+                        }
+
+                        // 處理每條記錄並添加到表格中
+                        records.forEach((record) => {
                             let tr = document.createElement("tr");
                             tr.innerHTML = `
-            <td>${record.ODR_LOGN}</td>
-            <td>${record.ODR_CHRT}</td>
-            <td>${record.ODR_PRDG}</td>
-            <td>${record.ODR_OPF}</td>
-            <td>${record.ODR_OPP}</td>
-            <td>${record.ODR_PODG}</td>
-            <td>${record.ChatGPT}</td>
-            <!-- <td>${record.summary}</td> -->
-
-        `;
+                <td>${record.ODR_LOGN}</td>
+                <td>${record.ODR_CHRT}</td>
+                <td>${record.ODR_OPP}</td>
+                ${
+                    fullDisplay
+                        ? `<td>${record.ODR_PREP}</td>
+                           <td>${record.ODR_OPER}</td>
+                           <td>${record.ODR_WCL}</td>
+                           <td>${record.ODR_PNPD}</td>`
+                        : ""
+                }
+            `;
                             tableBody.appendChild(tr);
                         });
                     })
