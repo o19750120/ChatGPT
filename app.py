@@ -61,18 +61,14 @@ def search_records():
     # 從請求中提取關鍵字
     data = request.get_json()
     keyword = data['keyword']
+    full_display = data.get('full_display', False)  # 預設為 False
 
     records = db.session.execute(
         text("""
             SELECT * FROM surgeryrecords 
             WHERE ODR_LOGN LIKE :keyword 
             OR ODR_CHRT	LIKE :keyword
-            OR ODR_PRDG LIKE :keyword
-            OR ODR_FIND LIKE :keyword
-            OR ODR_OPF LIKE :keyword
             OR ODR_OPP LIKE :keyword
-            OR ODR_PODG LIKE :keyword
-            OR ChatGPT LIKE :keyword
             LIMIT 2
         """), {
             "keyword": '%' + keyword + '%'
@@ -81,19 +77,19 @@ def search_records():
     # 對每一條記錄進行摘要
     processed_results = []
     for record in records:
-        # 摘要生成邏輯，這裡需要您自己實現一個函數
-        # summary = summarize_record(record)  # 假設的函數，需要您自己實現
-
-        processed_results.append({
+        result = {
             "ODR_LOGN": record[0],
             "ODR_CHRT": record[1],
-            "ODR_PRDG": record[2],
-            "ODR_OPF": record[4],
-            "ODR_OPP": record[5],
-            "ODR_PODG": record[6],
-            "ChatGPT": record[7]
-            # "summary": summary["summary"]  # 添加摘要
-        })
+            "ODR_OPP": record[2],
+        }
+        if full_display:
+            result.update({
+                "ODR_PREP": record[3],
+                "ODR_OPER": record[4],
+                "ODR_WCL": record[5],
+                "ODR_PNPD": record[6],
+            })
+        processed_results.append(result)
 
     return jsonify(processed_results)
 
