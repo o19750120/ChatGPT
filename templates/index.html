@@ -142,14 +142,13 @@
                         <table class="table">
                             <thead class="table-light">
                                 <tr>
-                                    <th>摘要內容</th>
                                     <th>手術序號</th>
                                     <th>病歷號</th>
                                     <th>術式名稱</th>
-                                    <th>手術發現</th>
                                     <th>術中發現</th>
                                     <th>手術細節</th>
                                     <th>術後診斷</th>
+                                    <th>ChatGPT</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,14 +194,15 @@
                         records.forEach((record, index) => {
                             let tr = document.createElement("tr");
                             tr.innerHTML = `
-            <td><button type="button" class="btn btn-primary" onclick="showSummary('${record.summary}')">顯示摘要</button></td>
             <td>${record.ODR_LOGN}</td>
             <td>${record.ODR_CHRT}</td>
             <td>${record.ODR_PRDG}</td>
-            <td>${record.ODR_FIND}</td>
             <td>${record.ODR_OPF}</td>
             <td>${record.ODR_OPP}</td>
             <td>${record.ODR_PODG}</td>
+            <td>${record.ChatGPT}</td>
+            <!-- <td>${record.summary}</td> -->
+
         `;
                             tableBody.appendChild(tr);
                         });
