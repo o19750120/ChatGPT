@@ -119,26 +119,56 @@
             <div class="row justify-content-center">
                 <div class="col-md-11 col-lg-9">
                     <div class="mb-3 d-flex">
-                        <input
-                            type="text"
+                        <select
+                            class="form-select"
+                            name="surgeryNumber"
+                            style="margin-right: 1rem"
+                        >
+                            <option value="">選擇手術序號</option>
+                            <!-- Options will be dynamically added here -->
+                        </select>
+                        <textarea
                             class="form-control"
                             name="t1"
                             placeholder="輸入關鍵字"
-                        />
+                            rows="5"
+                        >
+                            1. Surgery Name and Postoperative Diagnosis
+                            Surgery Name: Not explicitly mentioned in the provided record.
+                            Postoperative Diagnosis: Not provided in the record. It typically includes the final assessment of the patient's condition after surgery but requires specific medical information not included here.
+                            2. Patient Preparation and Operating Room Setup
+                            Patient Preparation: The patient was placed in a supine position under ETGA (presumably Endotracheal General Anesthesia).
+                            Operating Room Setup: The operation field was disinfected and draped in the usual manner. A pneumatic tourniquet was prepared and inflated after exsanguination.
+                            3. Surgical Entry and Procedure
+                            Surgical Entry: An anterior incision was made at the distal wrist crease along the radial border of the flexor carpi radialis tendon and extended 6 cm proximally.
+                            Procedure:
+                            Identification and protection of the flexor carpi radialis tendon and radial artery.
+                            Incision of the deep fascia between the tendon and artery.
+                            Division of the pronator quadratus at its radial insertion.
+                            Retractors were placed on both sides of the radius.
+                            Reduction of the fracture.
+                            Fixation of the fracture with AO VARY ANGLE LDRP (a type of orthopedic hardware).
+                            4. Wound Treatment and Surgery Conclusion
+                            Wound Treatment: The wound closure process is not detailed but mentioned as being completed in a routine fashion.
+                            Surgery Conclusion: The record concludes with the wound being closed, but does not provide post-surgery care or patient status.
+                                        </textarea
+                        >
                         <button
                             type="button"
                             onclick="searchRecords()"
-                            class="btn btn-danger"
+                            class="btn btn-primary"
                         >
                             查詢
                         </button>
-                        <button
-                            type="button"
-                            onclick="searchRecords(true)"
-                            class="btn btn-primary"
-                        >
-                            ChatGPT
-                        </button>
+                        <div class="text-center">
+                            <button
+                                type="button"
+                                onclick="saveChanges()"
+                                class="btn btn-success"
+                            >
+                                儲存更改
+                            </button>
+                        </div>
                     </div>
                     <div id="loading" class="text-center">
                         <div class="spinner-border text-primary" role="status">
@@ -151,7 +181,10 @@
                                 <tr>
                                     <th>手術序號</th>
                                     <th>病歷號</th>
-                                    <th>手術細節</th>
+                                    <th>手術真實細節</th>
+                                    <th>ChatGPT手術紀錄</th>
+                                    <th>新增紀錄</th>
+                                    <!-- 新增的欄位 -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -159,15 +192,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="summaryModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close" onclick="closeSummary()"
-                                >&times;</span
-                            >
-                            <p id="summaryText">摘要內容</p>
-                        </div>
-                    </div>
-                    <div class="error" id="error-message"></div>
                 </div>
             </div>
         </div>
@@ -178,8 +202,31 @@
             crossorigin="anonymous"
         ></script>
         <script>
-            function searchRecords(fullDisplay = false) {
-                let keyword = document.querySelector('input[name="t1"]').value;
+            // JavaScript code for fetching surgery numbers and searching records
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("/get-surgery-numbers")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        let surgeryNumberSelect = document.querySelector(
+                            'select[name="surgeryNumber"]'
+                        );
+                        data.forEach((num) => {
+                            let option = document.createElement("option");
+                            option.value = num;
+                            option.textContent = num;
+                            surgeryNumberSelect.appendChild(option);
+                        });
+                    })
+                    .catch((error) => console.error("Error:", error));
+            });
+
+            function searchRecords() {
+                let surgeryNumber = document.querySelector(
+                    'select[name="surgeryNumber"]'
+                ).value;
+                let keyword = document.querySelector(
+                    'textarea[name="t1"]'
+                ).value;
                 document.getElementById("loading").style.display = "block";
 
                 fetch("/search-results", {
@@ -188,8 +235,8 @@
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
+                        surgery_number: surgeryNumber,
                         keyword: keyword,
-                        full_display: fullDisplay,
                     }),
                 })
                     .then((response) => response.json())
@@ -197,49 +244,17 @@
                         document.getElementById("loading").style.display =
                             "none";
                         let tableBody = document.querySelector("tbody");
-                        let tableHead = document.querySelector("thead tr");
+                        tableBody.innerHTML = ""; // Clear existing table content
 
-                        // 清除現有的表格內容
-                        tableBody.innerHTML = "";
-
-                        // 如果 fullDisplay 為 true，則顯示額外的欄位標題
-                        if (fullDisplay) {
-                            // 添加額外欄位的標題到 <thead>
-                            tableHead.innerHTML = `
-                <th>手術序號</th>
-                <th>病歷號</th>
-                <th>手術細節</th>
-                <th>手術名稱與術後診斷</th>
-                <th>患者準備與手術場地準備</th>
-                <th>手術進入與操作</th>
-                <th>傷口處理與手術結尾</th>
-                <!-- 根據需求添加更多欄位 -->
-            `;
-                        } else {
-                            // 只顯示基本的欄位標題
-                            tableHead.innerHTML = `
-                <th>手術序號</th>
-                <th>病歷號</th>
-                <th>手術細節</th>
-            `;
-                        }
-
-                        // 處理每條記錄並添加到表格中
                         records.forEach((record) => {
                             let tr = document.createElement("tr");
                             tr.innerHTML = `
-                <td>${record.ODR_LOGN}</td>
-                <td>${record.ODR_CHRT}</td>
-                <td>${record.ODR_OPP}</td>
-                ${
-                    fullDisplay
-                        ? `<td>${record.ODR_PREP}</td>
-                           <td>${record.ODR_OPER}</td>
-                           <td>${record.ODR_WCL}</td>
-                           <td>${record.ODR_PNPD}</td>`
-                        : ""
-                }
-            `;
+                            <td>${record.ODR_LOGN}</td>
+                            <td>${record.ODR_CHRT}</td>
+                            <td>${record.ODR_OPP}</td>
+                            <td>${record.ChatGPT_Surgery_Record || "N/A"}</td>
+                            <td contenteditable="true"></td> <!-- 新增的可編輯空白欄位 -->
+                        `;
                             tableBody.appendChild(tr);
                         });
                     })
@@ -247,23 +262,34 @@
                         document.getElementById("loading").style.display =
                             "none";
                         console.error("Error:", error);
-                        let errorMessage =
-                            document.getElementById("error-message");
-                        errorMessage.textContent =
-                            "無法載入數據，請檢查後端服務。"; // Display error message
+                        document.getElementById("error-message").textContent =
+                            "無法載入數據，請檢查後端服務。";
                     });
             }
+            function saveChanges() {
+                const tableRows = document.querySelectorAll("table tbody tr");
+                const updates = [];
 
-            function showSummary(summary) {
-                let summaryModal = document.getElementById("summaryModal");
-                let summaryText = document.getElementById("summaryText");
-                summaryText.textContent = summary; // Set the summary text
-                summaryModal.style.display = "block"; // Show the modal
-            }
+                tableRows.forEach((row) => {
+                    const surgeryNumber = row.cells[0].innerText;
+                    const newRecord = row.cells[4].innerText; // 假設新增紀錄是第五個欄位
+                    updates.push({ surgeryNumber, newRecord });
+                });
 
-            function closeSummary() {
-                let summaryModal = document.getElementById("summaryModal");
-                summaryModal.style.display = "none"; // Hide the modal
+                fetch("/save-changes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updates),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log("Success:", data);
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
             }
         </script>
     </body>
