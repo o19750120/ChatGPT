@@ -5,6 +5,9 @@ from sqlalchemy import text
 import os
 from dotenv import dotenv_values
 
+import logging
+from logging.handlers import RotatingFileHandler
+
 # Setup Flask app
 app = Flask(__name__)
 
@@ -19,62 +22,68 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 
-def summarize_record(text):
+# Route to fetch surgery numbers
+@app.route('/get-surgery-numbers', methods=['GET'])
+def get_surgery_numbers():
+    try:
+        surgery_numbers = db.session.execute(
+            text("SELECT DISTINCT ODR_LOGN FROM surgeryrecords")).fetchall()
+        surgery_numbers = [num[0] for num in surgery_numbers]
+        return jsonify(surgery_numbers)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
+def surgery_record_by_ChatGPT(text):
     prompt = """
-    你是一位精通手術的專業醫生，並且擅長將手術紀錄與病人資訊製作成摘要，讓其他醫院醫師可以容易閱讀此病患的手術紀錄，因此對於醫療知識有深入的理解並且能撰寫成益於人理解的手術紀錄。
-    ​
-    規則：
-    ​
-    - 手術摘要請用台灣繁體中文表達，翻譯時要準確傳達手術與病人資訊，是整份文件都要經過翻譯，除非有特殊情況。
-    ​
-    - 保留特定的英文專業術語或手術術語，並在其前後加上空格，例如："中 UN 文"。
-    ​
-    - 摘要以遵守原意的前提下讓內容更通俗易懂，符合台灣繁體中文的表達習慣。
-
-    - 在編排摘要的文章時，應該按照手術的時間順序和邏輯順序來安排各個部分：
-
-    標題：項目
-    病人基本資料：手術序號、病歷號
-    手術過程：術式名稱、手術發現、術中發現、手術細節。
-
-
-    - 所有標題中的項目請使用我接下來提供你的內容，若有項目資料缺失請勿擅自謊報直接略過。手術過程、手術結果這兩個標題中的內容合併製作成摘要並且風格與上述攝護腺增生手術記錄版本的摘要類似，內容也僅限於配合文章編排而微幅修改。
-
-    - 本條消息請勿回覆任何內容，僅需直接打印摘要。
-
-    以下是一筆手術紀錄，包括：
-    手術序號、病歷號、日期、術式名稱、手術發現、術中發現、手術細節、術後診斷
-
     {text}
+
+    以上是一位病人的手術紀錄的關鍵字，請你使用以上內容還原成一筆完整的手術紀錄草稿。
+
+    注意，由於我是一位專業的醫生，所以我想要你依照關鍵字先生成一份手術紀錄草稿，我會再更進一步修改，請注意以下幾點：
+
+    1. 在你試著還原出完整的手術紀錄草稿時盡可能的保持明確性和細節的描述，如果關鍵字缺乏敘述導致你只能生產概括內容的話
+    你可以在生產完的文章備註你認為我最好可以提供或補充的細節，如：缺少手術切口的確切位置和深度、是否麻醉、傷口處理、傷口位置等等
+    不侷限這幾點，因為每位病人進行的手術都不一所以會有不同的狀況。請你也不要完全照這幾個我給你的參考而提供備註。請依照個案。
+
+    1-1. 接續前一點，沒有提供的關鍵字請不要強調Not provided in the record.直接略過就好，可以在最後簡單說如果有提供xxx更好。
+
+    2. 我的習慣是每個步驟都按照手術進行的實際順序進行描述。請你盡可能在某些部分不要顯得冗長或不夠直接。
+
+    3. 我實際的手術紀錄更加簡潔和直接，沒有不必要的擴展或解釋。請你創建的紀錄不要在某些部分可能包含了一些不必要的解釋或背景信息。
+    以保持簡潔性。
+
+    4. 請不要用列列點的方式，直接給我一個完整可以閱讀的文章。
+
+    5. 手術紀錄草稿請使用英文原文。回覆內容請直接給我手術紀錄，開頭不要其他內容。
+
+    6.不要自行新增[REDACTED]內容也不要出現任何REDACTED。
+
     """.format(text=text)
 
     res = openai.Completion.create(model="text-davinci-003",
                                    prompt=prompt,
-                                   max_tokens=1000)
+                                   max_tokens=2000)
 
-    summary = res["choices"][0]["text"].strip()
-    return {"summary": summary}
+    surgery_record = res["choices"][0]["text"].strip()
+    return {"surgery_record": surgery_record}
 
 
 @app.route('/search-results', methods=['POST'])
 def search_records():
-    # 從請求中提取關鍵字
     data = request.get_json()
-    keyword = data['keyword']
-    full_display = data.get('full_display', False)  # 預設為 False
+    surgery_number = data.get('surgery_number')
+    keyword = data.get('keyword')  # Get the keyword from the request
 
     records = db.session.execute(
         text("""
             SELECT * FROM surgeryrecords 
-            WHERE ODR_LOGN LIKE :keyword 
-            OR ODR_CHRT	LIKE :keyword
-            OR ODR_OPP LIKE :keyword
+            WHERE ODR_LOGN = :surgery_number
             LIMIT 2
         """), {
-            "keyword": '%' + keyword + '%'
+            "surgery_number": surgery_number
         }).fetchall()
 
-    # 對每一條記錄進行摘要
     processed_results = []
     for record in records:
         result = {
@@ -82,13 +91,8 @@ def search_records():
             "ODR_CHRT": record[1],
             "ODR_OPP": record[2],
         }
-        if full_display:
-            result.update({
-                "ODR_PREP": record[3],
-                "ODR_OPER": record[4],
-                "ODR_WCL": record[5],
-                "ODR_PNPD": record[6],
-            })
+        result["ChatGPT_Surgery_Record"] = surgery_record_by_ChatGPT(
+            keyword)["surgery_record"]
         processed_results.append(result)
 
     return jsonify(processed_results)
@@ -99,13 +103,72 @@ def index():
     return render_template('index.html')
 
 
+# 在您的 Flask 應用設定中添加日誌處理
+def setup_logging():
+    handler = RotatingFileHandler('flask_app.log',
+                                  maxBytes=10000,
+                                  backupCount=3)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+
+
+setup_logging()
+
+
+@app.route('/save-changes', methods=['POST'])
+def save_changes():
+    updates = request.get_json()
+    try:
+        for update in updates:
+            surgery_number = update['surgeryNumber']
+            new_record = update['newRecord']
+
+            # 使用 text() 函數將 SQL 語句包裝為文本對象
+            query = text(
+                "UPDATE surgeryrecords SET new_record = :new_record WHERE ODR_LOGN = :surgery_number"
+            )
+            db.session.execute(query, {
+                'new_record': new_record,
+                'surgery_number': surgery_number
+            })
+            db.session.commit()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        app.logger.error(f"Error in save_changes: {e}")
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/test-db', methods=['GET'])
 def test_db():
     try:
-        results = db.session.execute(
-            text("SELECT * FROM surgeryrecords LIMIT 10")).fetchall()
-        results_str = '<br>'.join(str(row) for row in results)
-        return f"Database is working! Results: <br> {results_str}"
+        result_proxy = db.session.execute(
+            text("SELECT * FROM surgeryrecords LIMIT 10"))
+
+        results = result_proxy.fetchall()
+
+        # 如果沒有結果，返回空表格
+        if not results:
+            return "<p>No records found.</p>"
+
+        # 構建一個 HTML 表格
+        html_table = "<table border='1'>"
+        html_table += "<tr>"  # 添加表頭
+        headers = result_proxy.keys()
+        for header in headers:
+            html_table += f"<th>{header}</th>"
+        html_table += "</tr>"
+
+        for row in results:
+            html_table += "<tr>"
+            for cell in row:
+                html_table += f"<td>{cell}</td>"
+            html_table += "</tr>"
+        html_table += "</table>"
+
+        return html_table
     except Exception as e:
         return f"Error occurred: {e}"
 
