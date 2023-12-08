@@ -59,6 +59,8 @@ def surgery_record_by_ChatGPT(text):
 
     6.不要自行新增[REDACTED]內容也不要出現任何REDACTED。
 
+    7. 回覆內容請在最後後是否使用英文原文撰寫
+
     """.format(text=text)
 
     res = openai.Completion.create(model="text-davinci-003",
