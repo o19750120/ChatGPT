@@ -63,9 +63,9 @@ def surgery_record_by_ChatGPT(text):
 
     """.format(text=text)
 
-    res = openai.Completion.create(model="text-davinci-003",
+    res = openai.Completion.create(model="gpt-3.5-turbo-instruct",
                                    prompt=prompt,
-                                   max_tokens=2000)
+                                   max_tokens=1500)
 
     surgery_record = res["choices"][0]["text"].strip()
     return {"surgery_record": surgery_record}
