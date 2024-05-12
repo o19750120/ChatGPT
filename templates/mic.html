@@ -1,30 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-    <head>
-        <meta charset="UTF-8" />
-        <title>即時語音辨識</title>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $("#start-recording-btn").click(function () {
-                    $(this).prop("disabled", true); // Disable the button
-                    $("#result").text("正在錄音和辨識中...");
-
-                    $.post("/recognize", {}, function (data) {
-                        if (data.success) {
-                            $("#result").text(data.text);
-                        } else {
-                            $("#result").text("錯誤: " + data.error);
-                        }
-                        $("#start-recording-btn").prop("disabled", false); // Re-enable the button
-                    });
-                });
-            });
-        </script>
-    </head>
+<html>
     <body>
-        <h1>即時語音辨識</h1>
-        <button id="start-recording-btn">開始錄音</button>
-        <div id="result"></div>
+        <!-- 將語音辨識結果顯示的地方 -->
+        <div id="show"></div>
+
+        <!-- 開始和結束按鈕 -->
+        <button onclick="startRecognition()">開始</button>
+        <button onclick="stopRecognition()">停止</button>
+
+        <script>
+            var recognition;
+            var show = document.getElementById("show");
+
+            if (!("webkitSpeechRecognition" in window)) {
+                alert("您的瀏覽器不支援語音辨識功能");
+            } else {
+                recognition = new webkitSpeechRecognition();
+
+                // 設定辨識的相關屬性
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "cmn-Hant-TW";
+
+                recognition.onstart = function () {
+                    console.log("開始辨識...");
+                };
+
+                recognition.onend = function () {
+                    console.log("停止辨識!");
+                };
+
+                recognition.onresult = function (event) {
+                    var i = event.resultIndex;
+                    var j = event.results[i].length - 1;
+                    show.innerHTML = event.results[i][j].transcript;
+                };
+            }
+
+            function startRecognition() {
+                recognition.start();
+            }
+
+            function stopRecognition() {
+                recognition.stop();
+            }
+        </script>
     </body>
 </html>

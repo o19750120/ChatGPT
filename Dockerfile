@@ -3,9 +3,6 @@ FROM python:3.10.7
 
 EXPOSE 5000
 
-# 安裝 PortAudio
-RUN apt-get update && apt-get install -y portaudio19-dev espeak ffmpeg libespeak1 libasound2-dev
-
 # 設置工作目錄
 WORKDIR /app
 
@@ -19,4 +16,4 @@ RUN pip install -r requirements.txt
 COPY . /app/
 
 # 運行你的應用
-CMD ["python", "app.py"]
+CMD ["python", "mic.py"]
