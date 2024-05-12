@@ -8,15 +8,17 @@ from dotenv import dotenv_values
 import logging
 from logging.handlers import RotatingFileHandler
 
+import speech_recognition as sr
+
 # Setup Flask app
 app = Flask(__name__)
 
-# Setup OpenAI API
+for Paas
 openai.api_key = os.environ.get('OPENAI_API_KEY')
-# openai.api_key = dotenv_values(".env")["OPENAI_API_KEY"]
-
-# Setup database
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
+# #for local
+# openai.api_key = dotenv_values(".env")["OPENAI_API_KEY"]
 # app.config['SQLALCHEMY_DATABASE_URI'] = dotenv_values(".env")["DATABASE_URL"]
 
 db = SQLAlchemy(app)
@@ -173,6 +175,29 @@ def test_db():
         return html_table
     except Exception as e:
         return f"Error occurred: {e}"
+
+
+@app.route('/recognize', methods=["POST"])
+def recognize():
+    r = sr.Recognizer()
+    print("請先等待...")  # 顯示在伺服器端
+    with sr.Microphone() as source:
+        print("錄音中...")  # 顯示在伺服器端
+        audio_data = r.listen(source)  # 使用 listen 自動處理錄音時長
+
+    try:
+        text = r.recognize_google(audio_data, language='zh-tw')
+        return jsonify({'success': True, 'text': text})
+    except sr.UnknownValueError:
+        return jsonify({
+            'success': False,
+            'error': "Google Speech Recognition 未能識別出任何語音"
+        })
+    except sr.RequestError as e:
+        return jsonify({
+            'success': False,
+            'error': f"無法從 Google Speech Recognition 服務請求結果; {e}"
+        })
 
 
 if __name__ == '__main__':

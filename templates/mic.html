@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+    <head>
+        <meta charset="UTF-8" />
+        <title>即時語音辨識</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("#start-recording-btn").click(function () {
+                    $(this).prop("disabled", true); // Disable the button
+                    $("#result").text("正在錄音和辨識中...");
+
+                    $.post("/recognize", {}, function (data) {
+                        if (data.success) {
+                            $("#result").text(data.text);
+                        } else {
+                            $("#result").text("錯誤: " + data.error);
+                        }
+                        $("#start-recording-btn").prop("disabled", false); // Re-enable the button
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>即時語音辨識</h1>
+        <button id="start-recording-btn">開始錄音</button>
+        <div id="result"></div>
+    </body>
+</html>

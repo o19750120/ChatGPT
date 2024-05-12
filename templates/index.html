@@ -41,9 +41,39 @@
                 border-radius: 0.25rem;
                 margin-right: 1rem;
             }
+
+            .btn {
+                margin: 0 10px; /* 每個按鈕左右增加10px的邊距 */
+                font-family: "Roboto", sans-serif; /* 確保使用相同的字體 */
+                font-size: 16px; /* 統一字體大小 */
+                font-weight: 500; /* 統一字體加粗程度，可根據需要調整 */
+                color: white; /* 設定所有按鈕文字為黑色 */
+            }
+            .btn-info {
+                color: white; /* 設定文字顏色為白色 */
+                text-decoration: none; /* 移除超連結的下劃線 */
+                display: flex; /* 使用flex布局 */
+                justify-content: center; /* 水平居中 */
+                align-items: center; /* 垂直居中 */
+                background-color: #17a2b8; /* 初始藍色背景 */
+            }
+
+            .btn-info:hover,
+            .btn-info:focus {
+                color: white; /* 懸停和聚焦時保持白色文字 */
+                text-decoration: none; /* 移除超連結的下劃線 */
+                background-color: #0d5d69; /* 懸停或聚焦時的更深藍色背景 */
+            }
+            .form-select + .form-control {
+                /* 選擇器後的輸入框 */
+                margin-left: 10px; /* 給查詢按鈕左側增加邊距 */
+            }
+            .btn-info {
+                background-color: #17a2b8; /* Bootstrap 藍色背景，根據需要可調整 */
+                border: none; /* 移除邊框 */
+            }
             .btn-primary,
             .btn-danger {
-                background-color: var(--primary-color);
                 border: none;
                 border-radius: 0.25rem;
                 margin-right: 10px;
@@ -111,7 +141,17 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+            #start-recording-btn {
+                color: black; /* 設定按鈕文字顏色為黑色 */
+                border-radius: 0.25rem; /* 統一設定四個角的圓角大小 */
+            }
+
+            /* 確保所有按鈕的圓角一致性 */
+            .btn {
+                border-radius: 0.25rem; /* 統一所有按鈕的圓角大小 */
+            }
         </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <div class="container">
@@ -167,6 +207,8 @@
                         >
                             儲存更改
                         </button>
+                        <a href="/test-db" class="btn btn-info">資料庫</a>
+                        <!-- 新增的按鈕 -->
                     </div>
                     <div id="loading" class="text-center">
                         <div class="spinner-border text-primary" role="status">
@@ -182,6 +224,23 @@
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
+
+                    <div class="input-group mb-3">
+                        <button
+                            id="start-recording-btn"
+                            class="btn btn-outline-primary"
+                        >
+                            開始錄音
+                        </button>
+
+                        <input
+                            type="text"
+                            id="transcript"
+                            class="form-control"
+                            placeholder="請按下開始錄音按鈕"
+                        />
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="table-light">
@@ -315,6 +374,30 @@
                         ).style.display = "none";
                     });
             }
+        </script>
+        <script>
+            $(document).ready(function () {
+                $("#start-recording-btn").click(function () {
+                    $(this).text("請先等待...").prop("disabled", true);
+                    $("#transcript").val("請先等待...");
+
+                    setTimeout(() => {
+                        $(this).text("錄音中...");
+                        $("#transcript").val("錄音中...");
+
+                        $.post("/recognize", function (data) {
+                            if (data.success) {
+                                $("#transcript").val(data.text);
+                            } else {
+                                $("#transcript").val(data.error);
+                            }
+                            $("#start-recording-btn")
+                                .text("開始錄音")
+                                .prop("disabled", false);
+                        });
+                    }, 2000); // 模擬2秒延遲
+                });
+            });
         </script>
     </body>
 </html>
