@@ -229,6 +229,7 @@
                         <button
                             id="start-recording-btn"
                             class="btn btn-outline-primary"
+                            onclick="toggleRecording()"
                         >
                             開始錄音
                         </button>
@@ -376,28 +377,52 @@
             }
         </script>
         <script>
-            $(document).ready(function () {
-                $("#start-recording-btn").click(function () {
-                    $(this).text("請先等待...").prop("disabled", true);
-                    $("#transcript").val("請先等待...");
+            var recognition;
+            var transcript = document.getElementById("transcript");
+            var recordingBtn = document.getElementById("recording-btn");
 
-                    setTimeout(() => {
-                        $(this).text("錄音中...");
-                        $("#transcript").val("錄音中...");
+            var isRecording = false; // 用於追蹤是否正在錄音
 
-                        $.post("/recognize", function (data) {
-                            if (data.success) {
-                                $("#transcript").val(data.text);
-                            } else {
-                                $("#transcript").val(data.error);
-                            }
-                            $("#start-recording-btn")
-                                .text("開始錄音")
-                                .prop("disabled", false);
-                        });
-                    }, 2000); // 模擬2秒延遲
-                });
-            });
+            if (!("webkitSpeechRecognition" in window)) {
+                alert("您的瀏覽器不支援語音辨識功能");
+            } else {
+                recognition = new webkitSpeechRecognition();
+
+                // 設定辨識的相關屬性
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "cmn-Hant-TW";
+
+                recognition.onstart = function () {
+                    console.log("開始辨識...");
+                };
+
+                recognition.onend = function () {
+                    console.log("停止辨識!");
+                    isRecording = false;
+                    recordingBtn.innerText = "開始錄音";
+                    recordingBtn.classList.remove("btn-outline-danger");
+                    recordingBtn.classList.add("btn-outline-primary");
+                };
+
+                recognition.onresult = function (event) {
+                    var i = event.resultIndex;
+                    var j = event.results[i].length - 1;
+                    transcript.value = event.results[i][j].transcript;
+                };
+            }
+
+            function toggleRecording() {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                    isRecording = true;
+                    recordingBtn.innerText = "錄音中，點擊停止";
+                    recordingBtn.classList.remove("btn-outline-primary");
+                    recordingBtn.classList.add("btn-outline-danger");
+                }
+            }
         </script>
     </body>
 </html>
