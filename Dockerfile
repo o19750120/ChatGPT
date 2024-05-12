@@ -1,6 +1,8 @@
 # 選擇一個基礎映像
 FROM python:3.10.7
 
+EXPOSE 5000
+
 # 安裝 PortAudio
 RUN apt-get update && apt-get install -y portaudio19-dev
 
