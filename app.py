@@ -12,12 +12,12 @@ from logging.handlers import RotatingFileHandler
 app = Flask(__name__)
 
 # #for Paas
-# openai.api_key = os.environ.get('OPENAI_API_KEY')
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+openai.api_key = os.environ.get('OPENAI_API_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
 # #for local
-openai.api_key = dotenv_values(".env")["OPENAI_API_KEY"]
-app.config['SQLALCHEMY_DATABASE_URI'] = dotenv_values(".env")["DATABASE_URL"]
+# openai.api_key = dotenv_values(".env")["OPENAI_API_KEY"]
+# app.config['SQLALCHEMY_DATABASE_URI'] = dotenv_values(".env")["DATABASE_URL"]
 
 db = SQLAlchemy(app)
 
