@@ -4,7 +4,7 @@ FROM python:3.10.7
 EXPOSE 5000
 
 # 安裝 PortAudio
-RUN apt-get update && apt-get install -y portaudio19-dev espeak ffmpeg libespeak1
+RUN apt-get update && apt-get install -y portaudio19-dev espeak ffmpeg libespeak1 libasound2-dev
 
 # 設置工作目錄
 WORKDIR /app

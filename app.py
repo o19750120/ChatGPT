@@ -10,6 +10,8 @@ from logging.handlers import RotatingFileHandler
 
 import speech_recognition as sr
 
+import pyaudio
+
 # Setup Flask app
 app = Flask(__name__)
 
@@ -206,3 +208,9 @@ def recognize():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
+p = pyaudio.PyAudio()
+device_count = p.get_device_count()
+for i in range(device_count):
+    device_info = p.get_device_info_by_index(i)
+    print("Device {}: {}".format(i, device_info["name"]))
