@@ -179,7 +179,7 @@ def test_db():
 
 @app.route('/recognize', methods=["POST"])
 def recognize():
-    r = sr.Recognizer(device_index=2)
+    r = sr.Recognizer()
     print("請先等待...")  # 顯示在伺服器端
     with sr.Microphone() as source:
         print("錄音中...")  # 顯示在伺服器端
