@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y portaudio19-dev
 WORKDIR /app
 
 # 將你的 Python 依賴拷貝到容器中
-COPY requirements.txt /app/requirements.txt
+COPY requirements.txt /app/
 
 # 安裝 Python 依賴
 RUN pip install -r requirements.txt
 
 # 拷貝你的代碼到容器中
-COPY . /app
+COPY . /app/
 
 # 運行你的應用
-CMD ["python", "your_app.py"]
+CMD ["python", "app.py"]

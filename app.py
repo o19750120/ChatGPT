@@ -13,7 +13,7 @@ import speech_recognition as sr
 # Setup Flask app
 app = Flask(__name__)
 
-#for Paas
+# #for Paas
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
