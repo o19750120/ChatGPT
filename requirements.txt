@@ -5,3 +5,5 @@ sqlalchemy
 gunicorn
 pymysql
 python-dotenv
+pyaudio
+SpeechRecognition
