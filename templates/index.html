@@ -10,7 +10,6 @@
             integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
             crossorigin="anonymous"
         />
-
         <link
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
             rel="stylesheet"
@@ -46,7 +45,7 @@
                 border-radius: 5px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
                 max-width: 85%; /* 或者您可以使用更大的百分比或像素值 */
-                margin: auto; /* 居中显示 */
+                margin: auto; /* 居中顯示 */
             }
             h2 {
                 color: var(--primary-color);
@@ -165,6 +164,140 @@
             .btn {
                 border-radius: 0.25rem; /* 統一所有按鈕的圓角大小 */
             }
+
+            /* 聊天機器人的樣式 */
+            .chatbot {
+                width: 100%; /* 或設置為頁面寬度的特定百分比 */
+                background: #fff;
+                border: 1px solid #ccc; /* 輕微的邊框 */
+                border-radius: 10px;
+                overflow: hidden;
+                margin-top: 20px; /* 與上方元素的間隔 */
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 輕微的陰影效果 */
+            }
+
+            .chatbox {
+                height: auto; /* 自動高度 */
+                max-height: 300px; /* 最大高度，可滾動 */
+                overflow-y: auto; /* 超過時可滾動 */
+                padding: 20px; /* 內間距 */
+            }
+
+            /* 調整對話框內部樣式 */
+            .chatbox .chat {
+                display: flex;
+                list-style: none;
+                margin-bottom: 10px;
+            }
+
+            .chatbox .outgoing {
+                justify-content: flex-end;
+            }
+
+            .chatbox .incoming span {
+                width: 32px;
+                height: 32px;
+                color: #fff;
+                cursor: default;
+                text-align: center;
+                line-height: 32px;
+                align-self: flex-end;
+                background: #724ae8;
+                border-radius: 4px;
+                margin: 0 10px 7px 0;
+            }
+
+            .chatbox .chat p {
+                white-space: pre-wrap;
+                padding: 12px 16px;
+                border-radius: 10px;
+                max-width: 75%;
+                font-size: 0.95rem;
+            }
+
+            .chatbox .incoming p {
+                background: #f2f2f2;
+                color: #000;
+                border-radius: 10px 10px 10px 0;
+            }
+
+            .chatbox .outgoing p {
+                background: #724ae8;
+                color: #fff;
+                border-radius: 10px 10px 0 10px;
+            }
+
+            .chatbox .chat p.error {
+                color: #721c24;
+                background: #f8d7da;
+            }
+
+            /* 調整輸入區域樣式 */
+            .chatbot .chat-input {
+                display: flex;
+                gap: 5px;
+                position: relative;
+                width: 100%;
+                background: #fff;
+                padding: 10px;
+                border-top: 1px solid #ddd;
+            }
+
+            .chat-input textarea {
+                height: 55px;
+                width: calc(100% - 50px); /* 為發送按鈕留出空間 */
+                border: none;
+                outline: none;
+                resize: none;
+                padding: 15px;
+                font-size: 0.95rem;
+                border-radius: 5px;
+                background: #f4f4f4;
+            }
+
+            #send-btn {
+                width: 40px; /* 按鈕寬度 */
+                height: 40px; /* 按鈕高度 */
+                background-color: #005eb8; /* 設置按鈕背景色 */
+                color: white; /* 設置按鈕文字顏色 */
+                text-align: center;
+                line-height: 40px; /* 垂直居中 */
+                cursor: pointer;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* 調整滾動條樣式 */
+            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
+                background: #fff;
+                border-radius: 25px;
+            }
+
+            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
+                background: #ccc;
+                border-radius: 25px;
+            }
+
+            /* 針對小螢幕的調整 */
+            @media (max-width: 490px) {
+                .chatbot {
+                    width: 100%;
+                    border-radius: 0;
+                }
+                .chatbot .chatbox {
+                    max-height: 200px;
+                    padding: 15px;
+                }
+                .chatbot .chat-input {
+                    padding: 10px;
+                }
+            }
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
@@ -188,25 +321,25 @@
                             placeholder="輸入關鍵字"
                             rows="5"
                         >
-                            1. Surgery Name and Postoperative Diagnosis
-                            Surgery Name: Not explicitly mentioned in the provided record.
-                            Postoperative Diagnosis: Not provided in the record. It typically includes the final assessment of the patient's condition after surgery but requires specific medical information not included here.
-                            2. Patient Preparation and Operating Room Setup
-                            Patient Preparation: The patient was placed in a supine position under ETGA (presumably Endotracheal General Anesthesia).
-                            Operating Room Setup: The operation field was disinfected and draped in the usual manner. A pneumatic tourniquet was prepared and inflated after exsanguination.
-                            3. Surgical Entry and Procedure
-                            Surgical Entry: An anterior incision was made at the distal wrist crease along the radial border of the flexor carpi radialis tendon and extended 6 cm proximally.
-                            Procedure:
-                            Identification and protection of the flexor carpi radialis tendon and radial artery.
-                            Incision of the deep fascia between the tendon and artery.
-                            Division of the pronator quadratus at its radial insertion.
-                            Retractors were placed on both sides of the radius.
-                            Reduction of the fracture.
-                            Fixation of the fracture with AO VARY ANGLE LDRP (a type of orthopedic hardware).
-                            4. Wound Treatment and Surgery Conclusion
-                            Wound Treatment: The wound closure process is not detailed but mentioned as being completed in a routine fashion.
-                            Surgery Conclusion: The record concludes with the wound being closed, but does not provide post-surgery care or patient status.
-                                        </textarea
+                        1. Surgery Name and Postoperative Diagnosis
+                        Surgery Name: Not explicitly mentioned in the provided record.
+                        Postoperative Diagnosis: Not provided in the record. It typically includes the final assessment of the patient's condition after surgery but requires specific medical information not included here.
+                        2. Patient Preparation and Operating Room Setup
+                        Patient Preparation: The patient was placed in a supine position under ETGA (presumably Endotracheal General Anesthesia).
+                        Operating Room Setup: The operation field was disinfected and draped in the usual manner. A pneumatic tourniquet was prepared and inflated after exsanguination.
+                        3. Surgical Entry and Procedure
+                        Surgical Entry: An anterior incision was made at the distal wrist crease along the radial border of the flexor carpi radialis tendon and extended 6 cm proximally.
+                        Procedure:
+                        Identification and protection of the flexor carpi radialis tendon and radial artery.
+                        Incision of the deep fascia between the tendon and artery.
+                        Division of the pronator quadratus at its radial insertion.
+                        Retractors were placed on both sides of the radius.
+                        Reduction of the fracture.
+                        Fixation of the fracture with AO VARY ANGLE LDRP (a type of orthopedic hardware).
+                        4. Wound Treatment and Surgery Conclusion
+                        Wound Treatment: The wound closure process is not detailed but mentioned as being completed in a routine fashion.
+                        Surgery Conclusion: The record concludes with the wound being closed, but does not provide post-surgery care or patient status.
+                    </textarea
                         >
                         <button
                             type="button"
@@ -242,6 +375,27 @@
                         </div>
                     </div>
 
+                    <div class="chatbot">
+                        <ul class="chatbox">
+                            <li class="chat incoming">
+                                <span class="material-symbols-outlined"
+                                    >smart_toy</span
+                                >
+                                <p>我是你的醫療助手</p>
+                            </li>
+                        </ul>
+                        <div class="chat-input">
+                            <textarea
+                                placeholder="請輸入文字"
+                                spellcheck="false"
+                                required
+                            ></textarea>
+                            <span id="send-btn" class="material-symbols-rounded"
+                                >send</span
+                            >
+                        </div>
+                    </div>
+
                     <div class="input-group mb-3">
                         <button
                             id="start-recording-btn"
@@ -259,27 +413,6 @@
                         />
                     </div>
 
-                    <div class="chatbot">
-                        <ul class="chatbox">
-                            <li class="chat incoming">
-                                <span class="material-symbols-outlined"
-                                    >smart_toy</span
-                                >
-                                <p>你好 👋<br />有什麼需要幫您的忙?</p>
-                            </li>
-                        </ul>
-                        <div class="chat-input">
-                            <textarea
-                                placeholder="請輸入文字"
-                                spellcheck="false"
-                                required
-                            ></textarea>
-                            <span id="send-btn" class="material-symbols-rounded"
-                                >send</span
-                            >
-                        </div>
-                    </div>
-
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="table-light">
@@ -287,7 +420,7 @@
                                     <th>手術序號</th>
                                     <th>病歷號</th>
                                     <th>手術真實細節</th>
-                                    <th>ChatGPT手術紀錄</th>
+                                    <th>ChatGPT手術紀錄（內建）</th>
                                     <th>備註</th>
                                     <!-- 新增的欄位 -->
                                 </tr>
@@ -358,9 +491,13 @@
                             <td>${record.ODR_CHRT}</td>
                             <td>${record.ODR_OPP}</td>
                             <td>${record.ChatGPT_Surgery_Record || "N/A"}</td>
-                            <td contenteditable="true"></td> <!-- 新增的可編輯空白欄位 -->
+                            <td contenteditable="true"></td>
                         `;
                             tableBody.appendChild(tr);
+                            // 將查詢結果作為消息發送
+                            simulateUserInputAndSend(
+                                `${record.ChatGPT_Surgery_Record || "無結果"}`
+                            );
                         });
                     })
                     .catch((error) => {
@@ -368,9 +505,18 @@
                             "none";
                         console.error("Error:", error);
                         document.getElementById("error-message").textContent =
-                            "無法載入數據，請檢查後端服務。";
+                            "無法加載數據，請檢查後端服務。";
                     });
             }
+
+            function simulateUserInputAndSend(message) {
+                const chatInput = document.querySelector(
+                    ".chat-input textarea"
+                );
+                chatInput.value = message; // 將消息填入輸入框
+                handleChat(); // 模擬點擊發送按鈕
+            }
+
             function saveChanges() {
                 const tableRows = document.querySelectorAll("table tbody tr");
                 const updates = [];
@@ -462,6 +608,118 @@
                 }
             }
         </script>
-        <script src="{{ url_for('static', filename='script.js') }}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                fetch("/config")
+                    .then((response) => response.json())
+                    .then((config) => {
+                        window.API_KEY = config.apiKey;
+
+                        initChat();
+                    })
+                    .catch((error) =>
+                        console.error("Error fetching config:", error)
+                    );
+            });
+
+            const chatbotToggler = document.querySelector(".chatbot-toggler");
+            const closeBtn = document.querySelector(".close-btn");
+            const chatbox = document.querySelector(".chatbox");
+            const chatInput = document.querySelector(".chat-input textarea");
+            const sendChatBtn = document.querySelector(".chat-input span");
+
+            let userMessage = null;
+            const inputInitHeight = chatInput.scrollHeight;
+
+            const createChatLi = (message, className) => {
+                const chatLi = document.createElement("li");
+                chatLi.classList.add("chat", `${className}`);
+                let chatContent =
+                    className === "outgoing"
+                        ? `<p></p>`
+                        : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
+                chatLi.innerHTML = chatContent;
+                chatLi.querySelector("p").textContent = message;
+                return chatLi;
+            };
+
+            function generateResponse(userMessage) {
+                fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ message: userMessage }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        const responseMessage =
+                            data.choices[0].message.content.trim();
+                        const incomingChatLi = createChatLi(
+                            responseMessage,
+                            "incoming"
+                        );
+                        chatbox.appendChild(incomingChatLi);
+                        chatbox.scrollTo(0, chatbox.scrollHeight);
+                    })
+                    .catch((error) => {
+                        const errorMessage =
+                            error.message || "An unknown error occurred.";
+                        const errorChatLi = createChatLi(
+                            `Error: ${errorMessage}`,
+                            "incoming"
+                        );
+                        chatbox.appendChild(errorChatLi);
+                        chatbox.scrollTo(0, chatbox.scrollHeight);
+                    });
+            }
+
+            function handleChat() {
+                let userMessage = chatInput.value.trim();
+
+                if (!userMessage) {
+                    console.error("No user message to send.");
+                    return;
+                }
+
+                chatInput.value = "";
+                chatInput.style.height = `${inputInitHeight}px`;
+
+                const outgoingChatLi = createChatLi(userMessage, "outgoing");
+                chatbox.appendChild(outgoingChatLi);
+                chatbox.scrollTo(0, chatbox.scrollHeight);
+
+                setTimeout(() => {
+                    generateResponse(userMessage);
+                }, 600);
+            }
+
+            chatInput.addEventListener("input", () => {
+                chatInput.style.height = `${inputInitHeight}px`;
+                chatInput.style.height = `${chatInput.scrollHeight}px`;
+            });
+
+            chatInput.addEventListener("keydown", (e) => {
+                if (
+                    e.key === "Enter" &&
+                    !e.shiftKey &&
+                    window.innerWidth > 800
+                ) {
+                    e.preventDefault();
+                    handleChat();
+                }
+            });
+
+            sendChatBtn.addEventListener("click", handleChat);
+            closeBtn.addEventListener("click", () =>
+                document.body.classList.remove("show-chatbot")
+            );
+            chatbotToggler.addEventListener("click", () =>
+                document.body.classList.toggle("show-chatbot")
+            );
+        </script>
     </body>
 </html>

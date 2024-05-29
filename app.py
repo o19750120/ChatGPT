@@ -4,6 +4,7 @@ import openai
 from sqlalchemy import text
 import os
 from dotenv import dotenv_values
+import requests
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -11,13 +12,15 @@ from logging.handlers import RotatingFileHandler
 # Setup Flask app
 app = Flask(__name__)
 
-# # #for Paas
+# #for Paas
 # openai.api_key = os.environ.get('OPENAI_API_KEY')
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
-#for local
+# #for local
 openai.api_key = dotenv_values(".env")["OPENAI_API_KEY"]
 app.config['SQLALCHEMY_DATABASE_URI'] = dotenv_values(".env")["DATABASE_URL"]
+
+API_KEY = os.environ.get('OPENAI_API_KEY')
 
 db = SQLAlchemy(app)
 
@@ -100,11 +103,6 @@ def search_records():
     return jsonify(processed_results)
 
 
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('index.html')
-
-
 # 在您的 Flask 應用設定中添加日誌處理
 def setup_logging():
     handler = RotatingFileHandler('flask_app.log',
@@ -175,13 +173,41 @@ def test_db():
         return f"Error occurred: {e}"
 
 
-@app.route('/config')
-def get_config():
-    return jsonify({'apiKey': os.getenv('OPENAI_API_KEY')})
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.json.get('message')
+    if not user_message:
+        return jsonify({'error': 'No message provided'}), 400
+
+    response = requests.post('https://api.openai.com/v1/chat/completions',
+                             headers={
+                                 'Content-Type': 'application/json',
+                                 'Authorization': f'Bearer {API_KEY}'
+                             },
+                             json={
+                                 'model':
+                                 'gpt-4',
+                                 'messages': [{
+                                     'role': 'user',
+                                     'content': user_message
+                                 }],
+                                 'max_tokens':
+                                 6000,
+                             })
+
+    if response.status_code != 200:
+        return jsonify({
+            'error':
+            response.json().get('error', {}).get('message', 'Unknown error')
+        }), response.status_code
+
+    return jsonify(response.json())
 
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
