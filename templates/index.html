@@ -14,8 +14,6 @@
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
             rel="stylesheet"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- Google Fonts Link For Icons -->
         <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
@@ -28,277 +26,6 @@
             rel="stylesheet"
             href="{{ url_for('static', filename='style.css') }}"
         />
-        <style>
-            :root {
-                --primary-color: #005eb8;
-                --secondary-color: #4d9f0c;
-            }
-            body {
-                padding-top: 3%;
-                font-size: 18px;
-                font-family: "Roboto", sans-serif;
-                background: #f4f4f4;
-            }
-            .container {
-                background: white;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-                max-width: 85%; /* 或者您可以使用更大的百分比或像素值 */
-                margin: auto; /* 居中顯示 */
-            }
-            h2 {
-                color: var(--primary-color);
-            }
-            input[type="text"] {
-                border: 2px solid var(--primary-color);
-                border-radius: 0.25rem;
-                margin-right: 1rem;
-            }
-
-            .btn {
-                margin: 0 10px; /* 每個按鈕左右增加10px的邊距 */
-                font-family: "Roboto", sans-serif; /* 確保使用相同的字體 */
-                font-size: 16px; /* 統一字體大小 */
-                font-weight: 500; /* 統一字體加粗程度，可根據需要調整 */
-                color: white; /* 設定所有按鈕文字為黑色 */
-            }
-            .btn-info {
-                color: white; /* 設定文字顏色為白色 */
-                text-decoration: none; /* 移除超連結的下劃線 */
-                display: flex; /* 使用flex布局 */
-                justify-content: center; /* 水平居中 */
-                align-items: center; /* 垂直居中 */
-                background-color: #17a2b8; /* 初始藍色背景 */
-            }
-
-            .btn-info:hover,
-            .btn-info:focus {
-                color: white; /* 懸停和聚焦時保持白色文字 */
-                text-decoration: none; /* 移除超連結的下劃線 */
-                background-color: #0d5d69; /* 懸停或聚焦時的更深藍色背景 */
-            }
-            .form-select + .form-control {
-                /* 選擇器後的輸入框 */
-                margin-left: 10px; /* 給查詢按鈕左側增加邊距 */
-            }
-            .btn-info {
-                background-color: #17a2b8; /* Bootstrap 藍色背景，根據需要可調整 */
-                border: none; /* 移除邊框 */
-            }
-            .btn-primary,
-            .btn-danger {
-                border: none;
-                border-radius: 0.25rem;
-                margin-right: 10px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            table,
-            th,
-            td {
-                border: 1px solid lightgray;
-            }
-            th {
-                background-color: var(--secondary-color);
-                color: black;
-                text-align: center;
-                vertical-align: middle;
-            }
-            td {
-                padding: 10px;
-                text-align: center;
-                vertical-align: middle;
-            }
-            .error {
-                color: red;
-                margin: 10px 0;
-            }
-            #loading {
-                display: none;
-                text-align: center;
-            }
-            /* Style the modal */
-            .modal {
-                display: none; /* Hidden by default */
-                position: fixed; /* Stay in place */
-                z-index: 1; /* Sit on top */
-                left: 0;
-                top: 0;
-                width: 100%; /* Full width */
-                height: 100%; /* Full height */
-                overflow: auto; /* Enable scroll if needed */
-                background-color: rgb(0, 0, 0); /* Fallback color */
-                background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-                padding-top: 60px; /* Location of the box */
-            }
-            /* Modal Content */
-            .modal-content {
-                background-color: #fefefe;
-                margin: auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 50%; /* Could be more or less, depending on screen size */
-            }
-            /* The Close Button */
-            .close {
-                color: #aaaaaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
-            .close:hover,
-            .close:focus {
-                color: #000;
-                text-decoration: none;
-                cursor: pointer;
-            }
-            #start-recording-btn {
-                color: black; /* 設定按鈕文字顏色為黑色 */
-                border-radius: 0.25rem; /* 統一設定四個角的圓角大小 */
-            }
-
-            /* 確保所有按鈕的圓角一致性 */
-            .btn {
-                border-radius: 0.25rem; /* 統一所有按鈕的圓角大小 */
-            }
-
-            /* 聊天機器人的樣式 */
-            .chatbot {
-                width: 100%; /* 或設置為頁面寬度的特定百分比 */
-                background: #fff;
-                border: 1px solid #ccc; /* 輕微的邊框 */
-                border-radius: 10px;
-                overflow: hidden;
-                margin-top: 20px; /* 與上方元素的間隔 */
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 輕微的陰影效果 */
-            }
-
-            .chatbox {
-                height: auto; /* 自動高度 */
-                max-height: 300px; /* 最大高度，可滾動 */
-                overflow-y: auto; /* 超過時可滾動 */
-                padding: 20px; /* 內間距 */
-            }
-
-            /* 調整對話框內部樣式 */
-            .chatbox .chat {
-                display: flex;
-                list-style: none;
-                margin-bottom: 10px;
-            }
-
-            .chatbox .outgoing {
-                justify-content: flex-end;
-            }
-
-            .chatbox .incoming span {
-                width: 32px;
-                height: 32px;
-                color: #fff;
-                cursor: default;
-                text-align: center;
-                line-height: 32px;
-                align-self: flex-end;
-                background: #724ae8;
-                border-radius: 4px;
-                margin: 0 10px 7px 0;
-            }
-
-            .chatbox .chat p {
-                white-space: pre-wrap;
-                padding: 12px 16px;
-                border-radius: 10px;
-                max-width: 75%;
-                font-size: 0.95rem;
-            }
-
-            .chatbox .incoming p {
-                background: #f2f2f2;
-                color: #000;
-                border-radius: 10px 10px 10px 0;
-            }
-
-            .chatbox .outgoing p {
-                background: #724ae8;
-                color: #fff;
-                border-radius: 10px 10px 0 10px;
-            }
-
-            .chatbox .chat p.error {
-                color: #721c24;
-                background: #f8d7da;
-            }
-
-            /* 調整輸入區域樣式 */
-            .chatbot .chat-input {
-                display: flex;
-                gap: 5px;
-                position: relative;
-                width: 100%;
-                background: #fff;
-                padding: 10px;
-                border-top: 1px solid #ddd;
-            }
-
-            .chat-input textarea {
-                height: 55px;
-                width: calc(100% - 50px); /* 為發送按鈕留出空間 */
-                border: none;
-                outline: none;
-                resize: none;
-                padding: 15px;
-                font-size: 0.95rem;
-                border-radius: 5px;
-                background: #f4f4f4;
-            }
-
-            #send-btn {
-                width: 40px; /* 按鈕寬度 */
-                height: 40px; /* 按鈕高度 */
-                background-color: #005eb8; /* 設置按鈕背景色 */
-                color: white; /* 設置按鈕文字顏色 */
-                text-align: center;
-                line-height: 40px; /* 垂直居中 */
-                cursor: pointer;
-                border-radius: 5px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            /* 調整滾動條樣式 */
-            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
-                background: #fff;
-                border-radius: 25px;
-            }
-
-            .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
-                background: #ccc;
-                border-radius: 25px;
-            }
-
-            /* 針對小螢幕的調整 */
-            @media (max-width: 490px) {
-                .chatbot {
-                    width: 100%;
-                    border-radius: 0;
-                }
-                .chatbot .chatbox {
-                    max-height: 200px;
-                    padding: 15px;
-                }
-                .chatbot .chat-input {
-                    padding: 10px;
-                }
-            }
-        </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
@@ -381,7 +108,7 @@
                                 <span class="material-symbols-outlined"
                                     >smart_toy</span
                                 >
-                                <p>我是你的醫療助手</p>
+                                <p>你好 👋<br />有什麼需要幫您的忙?</p>
                             </li>
                         </ul>
                         <div class="chat-input">
@@ -420,7 +147,7 @@
                                     <th>手術序號</th>
                                     <th>病歷號</th>
                                     <th>手術真實細節</th>
-                                    <th>ChatGPT手術紀錄（內建）</th>
+                                    <th>ChatGPT手術紀錄</th>
                                     <th>備註</th>
                                     <!-- 新增的欄位 -->
                                 </tr>
@@ -494,9 +221,11 @@
                             <td contenteditable="true"></td>
                         `;
                             tableBody.appendChild(tr);
-                            // 將查詢結果作為消息發送
+                            // 将查询结果作为消息发送
                             simulateUserInputAndSend(
-                                `${record.ChatGPT_Surgery_Record || "無結果"}`
+                                `手术记录: ${
+                                    record.ChatGPT_Surgery_Record || "无结果"
+                                }`
                             );
                         });
                     })
@@ -505,7 +234,7 @@
                             "none";
                         console.error("Error:", error);
                         document.getElementById("error-message").textContent =
-                            "無法加載數據，請檢查後端服務。";
+                            "无法加载数据，请检查后端服务。";
                     });
             }
 
@@ -513,8 +242,8 @@
                 const chatInput = document.querySelector(
                     ".chat-input textarea"
                 );
-                chatInput.value = message; // 將消息填入輸入框
-                handleChat(); // 模擬點擊發送按鈕
+                chatInput.value = message; // 将消息填入输入框
+                handleChat(); // 模拟点击发送按钮
             }
 
             function saveChanges() {

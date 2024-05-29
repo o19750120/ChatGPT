@@ -34,7 +34,7 @@ body {
 .chatbox .chat {
     display: flex;
     list-style: none;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .chatbox .outgoing {
@@ -144,4 +144,145 @@ body {
     .chatbot .chat-input {
         padding: 10px;
     }
+}
+
+:root {
+    --primary-color: #005eb8;
+    --secondary-color: #4d9f0c;
+}
+body {
+    padding-top: 3%;
+    font-size: 18px;
+    font-family: "Roboto", sans-serif;
+    background: #f4f4f4;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    max-width: 85%; /* 或者您可以使用更大的百分比或像素值 */
+    margin: auto; /* 居中顯示 */
+}
+h2 {
+    color: var(--primary-color);
+}
+input[type="text"] {
+    border: 2px solid var(--primary-color);
+    border-radius: 0.25rem;
+    margin-right: 1rem;
+}
+
+.btn {
+    margin: 0 10px; /* 每個按鈕左右增加10px的邊距 */
+    font-family: "Roboto", sans-serif; /* 確保使用相同的字體 */
+    font-size: 16px; /* 統一字體大小 */
+    font-weight: 500; /* 統一字體加粗程度，可根據需要調整 */
+    color: white; /* 設定所有按鈕文字為黑色 */
+}
+.btn-info {
+    color: white; /* 設定文字顏色為白色 */
+    text-decoration: none; /* 移除超連結的下劃線 */
+    display: flex; /* 使用flex布局 */
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    background-color: #17a2b8; /* 初始藍色背景 */
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    color: white; /* 懸停和聚焦時保持白色文字 */
+    text-decoration: none; /* 移除超連結的下劃線 */
+    background-color: #0d5d69; /* 懸停或聚焦時的更深藍色背景 */
+}
+.form-select + .form-control {
+    /* 選擇器後的輸入框 */
+    margin-left: 10px; /* 給查詢按鈕左側增加邊距 */
+}
+.btn-info {
+    background-color: #17a2b8; /* Bootstrap 藍色背景，根據需要可調整 */
+    border: none; /* 移除邊框 */
+}
+.btn-primary,
+.btn-danger {
+    border: none;
+    border-radius: 0.25rem;
+    margin-right: 10px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table,
+th,
+td {
+    border: 1px solid lightgray;
+}
+th {
+    background-color: var(--secondary-color);
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+}
+td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+.error {
+    color: red;
+    margin: 10px 0;
+}
+#loading {
+    display: none;
+    text-align: center;
+}
+/* Style the modal */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    padding-top: 60px; /* Location of the box */
+}
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Could be more or less, depending on screen size */
+}
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+#start-recording-btn {
+    color: black; /* 設定按鈕文字顏色為黑色 */
+    border-radius: 0.25rem; /* 統一設定四個角的圓角大小 */
+}
+
+/* 確保所有按鈕的圓角一致性 */
+.btn {
+    border-radius: 0.25rem; /* 統一所有按鈕的圓角大小 */
+}
+
+.input-group {
+    margin-top: 20px; /* 增加上邊距 */
+    margin-bottom: 20px; /* 增加下邊距 */
 }
