@@ -175,6 +175,11 @@ def test_db():
         return f"Error occurred: {e}"
 
 
+@app.route('/config')
+def get_config():
+    return jsonify({'apiKey': os.getenv('OPENAI_API_KEY')})
+
+
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
