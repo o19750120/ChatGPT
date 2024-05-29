@@ -1,0 +1,147 @@
+/* Import Google font - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: #e3f2fd;
+}
+
+/* 聊天機器人的樣式 */
+.chatbot {
+    width: 100%; /* 或設置為頁面寬度的特定百分比 */
+    background: #fff;
+    border: 1px solid #ccc; /* 輕微的邊框 */
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px; /* 與上方元素的間隔 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 輕微的陰影效果 */
+}
+
+.chatbox {
+    height: auto; /* 自動高度 */
+    max-height: 300px; /* 最大高度，可滾動 */
+    overflow-y: auto; /* 超過時可滾動 */
+    padding: 20px; /* 內間距 */
+}
+
+/* 調整對話框內部樣式 */
+.chatbox .chat {
+    display: flex;
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.chatbox .outgoing {
+    justify-content: flex-end;
+}
+
+.chatbox .incoming span {
+    width: 32px;
+    height: 32px;
+    color: #fff;
+    cursor: default;
+    text-align: center;
+    line-height: 32px;
+    align-self: flex-end;
+    background: #724ae8;
+    border-radius: 4px;
+    margin: 0 10px 7px 0;
+}
+
+.chatbox .chat p {
+    white-space: pre-wrap;
+    padding: 12px 16px;
+    border-radius: 10px;
+    max-width: 75%;
+    font-size: 0.95rem;
+}
+
+.chatbox .incoming p {
+    background: #f2f2f2;
+    color: #000;
+    border-radius: 10px 10px 10px 0;
+}
+
+.chatbox .outgoing p {
+    background: #724ae8;
+    color: #fff;
+    border-radius: 10px 10px 0 10px;
+}
+
+.chatbox .chat p.error {
+    color: #721c24;
+    background: #f8d7da;
+}
+
+/* 調整輸入區域樣式 */
+.chatbot .chat-input {
+    display: flex;
+    gap: 5px;
+    position: relative;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input textarea {
+    height: 55px;
+    width: calc(100% - 50px); /* 為發送按鈕留出空間 */
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 15px;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    background: #f4f4f4;
+}
+
+#send-btn {
+    width: 40px; /* 按鈕寬度 */
+    height: 40px; /* 按鈕高度 */
+    background-color: #005eb8; /* 設置按鈕背景色 */
+    color: white; /* 設置按鈕文字顏色 */
+    text-align: center;
+    line-height: 40px; /* 垂直居中 */
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 調整滾動條樣式 */
+.chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 25px;
+}
+
+.chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 25px;
+}
+
+/* 針對小螢幕的調整 */
+@media (max-width: 490px) {
+    .chatbot {
+        width: 100%;
+        border-radius: 0;
+    }
+    .chatbot .chatbox {
+        max-height: 200px;
+        padding: 15px;
+    }
+    .chatbot .chat-input {
+        padding: 10px;
+    }
+}
