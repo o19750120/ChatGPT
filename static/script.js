@@ -1,3 +1,5 @@
+let API_KEY = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     fetch("/config")
         .then((response) => response.json())
