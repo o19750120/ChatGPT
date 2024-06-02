@@ -125,6 +125,7 @@
 
                     <div class="input-group mb-3">
                         <button
+                            手術紀錄
                             id="start-recording-btn"
                             class="btn btn-outline-primary"
                             onclick="toggleRecording()"
@@ -223,9 +224,7 @@
                             tableBody.appendChild(tr);
                             // 将查询结果作为消息发送
                             simulateUserInputAndSend(
-                                `手术记录: ${
-                                    record.ChatGPT_Surgery_Record || "无结果"
-                                }`
+                                ` ${record.ChatGPT_Surgery_Record || "无结果"}`
                             );
                         });
                     })
